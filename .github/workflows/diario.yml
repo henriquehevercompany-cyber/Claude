@@ -1,0 +1,31 @@
+name: Relatório Diário
+
+on:
+  schedule:
+    - cron: '0 12 * * *'  # 9h Brasília (UTC-3) = 12h UTC
+  workflow_dispatch:       # permite rodar manualmente
+
+jobs:
+  enviar-relatorio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Rodar relatório diário
+        env:
+          EVOLUTION_URL:       ${{ secrets.EVOLUTION_URL }}
+          EVOLUTION_INSTANCE:  ${{ secrets.EVOLUTION_INSTANCE }}
+          EVOLUTION_TOKEN:     ${{ secrets.EVOLUTION_TOKEN }}
+          WHATSAPP_NUMERO:     ${{ secrets.WHATSAPP_NUMERO }}
+          NOTION_TOKEN:        ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB_ID:        ${{ secrets.NOTION_DB_ID }}
+          SHEETS_ID:           ${{ secrets.SHEETS_ID }}
+        run: python relatorio.py diario
