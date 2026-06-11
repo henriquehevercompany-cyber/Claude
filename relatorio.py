@@ -33,29 +33,41 @@ def get_gasto_dia(data_str):
 
 
 def get_notion_leads(data_str):
+    """Conta todos os leads do dia (sem filtro de fonte/indicação), cobrindo fuso Brasília (UTC-3).
+    Busca data_str e data_str+1 em UTC, filtra pelo created_time real em Brasília."""
+    from datetime import datetime, timezone, timedelta
     url = f"https://api.notion.com/v1/databases/{NOTION_DB_ID}/query"
     headers = {
         "Authorization": f"Bearer {NOTION_TOKEN}",
         "Notion-Version": "2022-06-28",
         "Content-Type": "application/json"
     }
-    payload = {
-        "filter": {
-            "and": [
-                {"property": "Data de chegada", "created_time": {"equals": data_str}},
-                {"property": "Status", "select": {"does_not_equal": "INDICAÇÃO"}},
-                {"property": "Indicação?", "select": {"is_empty": True}}
-            ]
-        },
-        "page_size": 100
-    }
+    brasilia = timezone(timedelta(hours=-3))
+    dia = datetime.strptime(data_str, "%Y-%m-%d").replace(tzinfo=brasilia)
+    inicio = dia
+    fim = dia + timedelta(days=1)
+
+    todos = []
+    for d in [data_str, (dia + timedelta(days=1)).strftime("%Y-%m-%d")]:
+        payload = {
+            "filter": {"property": "Data de chegada", "created_time": {"equals": d}},
+            "page_size": 100
+        }
+        while True:
+            r = requests.post(url, headers=headers, json=payload).json()
+            todos += r.get("results", [])
+            if not r.get("has_more"):
+                break
+            payload["start_cursor"] = r["next_cursor"]
+
+    # Filtra pelo horário real em Brasília
     total = 0
-    while True:
-        r = requests.post(url, headers=headers, json=payload).json()
-        total += len(r.get("results", []))
-        if not r.get("has_more"):
-            break
-        payload["start_cursor"] = r["next_cursor"]
+    for rec in todos:
+        ct = rec.get("created_time", "")
+        if ct:
+            dt = datetime.fromisoformat(ct.replace("Z", "+00:00")).astimezone(brasilia)
+            if inicio <= dt < fim:
+                total += 1
     return total
 
 
