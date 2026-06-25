@@ -2,7 +2,7 @@ name: Relatório Diário
 
 on:
   schedule:
-    - cron: '0 12 * * *'  # 9h Brasília (UTC-3) = 12h UTC
+    - cron: '10 12 * * *'  # 9h10 Brasília (UTC-3) = 12h10 UTC
   workflow_dispatch:       # permite rodar manualmente
 
 jobs:
