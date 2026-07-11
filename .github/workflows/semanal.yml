@@ -1,9 +1,7 @@
 name: Relatório Semanal
 
 on:
-  schedule:
-    - cron: '0 12 * * 1'  # segunda-feira 9h Brasília (UTC-3) = 12h UTC
-  workflow_dispatch:
+  workflow_dispatch:  # cron pausado — envio manual apenas
 
 jobs:
   enviar-relatorio:
