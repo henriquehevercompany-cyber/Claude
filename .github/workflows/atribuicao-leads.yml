@@ -1,0 +1,27 @@
+name: Atribuição de Leads - Regional Pavuna
+
+on:
+  schedule:
+    - cron: '*/5 10-21 * * *'  # a cada 5 min, 7h-18h Brasília (UTC-3)
+  workflow_dispatch:
+
+jobs:
+  atribuir-leads:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Rodar atribuição de leads
+        env:
+          NOTION_TOKEN:          ${{ secrets.NOTION_TOKEN_ATRIBUICAO }}
+          NOTION_DB_ID_ORIGEM:   ${{ secrets.NOTION_DB_ID_ORIGEM }}
+          NOTION_DB_ID_INTERNO:  ${{ secrets.NOTION_DB_ID_INTERNO }}
+        run: python atribuicao_leads.py apply
