@@ -9,7 +9,7 @@ NOTION_DB_ID_INTERNO = os.environ["NOTION_DB_ID_INTERNO"]     # Regional Pavuna 
 # O rodízio do n8n ("Atribuição Kris") já escolhe um consultor por lead e grava esse
 # nome em "Consultor atribuido". Quando o escolhido for um destes, o lead é movido
 # para o board do time interno (onde essa pessoa realmente atende).
-CONSULTORES_TIME_INTERNO = {"Sara Ferreira", "Isabelly Floriado", "Kristopher Souza"}
+CONSULTORES_TIME_INTERNO = {"Sara Ferreira", "Isabelly Floriano", "Kristopher Souza"}
 
 # Leads chegados antes deste corte nunca são movidos, mesmo que estejam atribuídos a um
 # dos consultores acima — evita mover retroativamente centenas de leads antigos já
